@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  email-control:
+    build: .
+    container_name: ius-email-control
+    ports:
+      - "1000:1000"
+    environment:
+      - NODE_ENV=production
+      - PORT=1000
+      - CLIENT_URL=http://localhost:1000
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped

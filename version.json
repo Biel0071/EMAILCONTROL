@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0",
+  "buildDate": "2026-09-21",
+  "name": "IUS Email Control",
+  "downloadUrl": "https://github.com/Biel0071/EMAILCONTROL/releases/latest",
+  "installerFileName": "IUS-Email-Control-Setup-1.0.0.exe",
+  "portableFileName": "IUS-Email-Control-Portable-1.0.0.exe",
+  "changelog": [
+    "Versão inicial executável para Windows (.exe) nativa e portátil",
+    "Motor de Conformidade e Diretrizes IUS Natura (11 escopos oficiais)",
+    "Leitor avançado com Modo Formatado (sandbox) e Modo Leitura",
+    "Temas Dark e White Mode com alternância instantânea",
+    "Download e gerenciamento real de anexos",
+    "Verificação de atualizações automáticas dentro do app"
+  ]
+}

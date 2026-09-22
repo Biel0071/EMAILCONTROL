@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ius - Controle de E-mails com IUS</title>
+<!-- Inter Google Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script type='text/javascript' nonce='ZMQ4tk4GzGhP30W0d4WOWw==' src='https://contribution.usercontent.google.com/PBxTQRU3cqDEnbOCnrMIy0NAb6MFzJ-U0ve3UNtE9XpYhx_dLX2O84r8RqPnNLwG6YSaQR_yloP4mBhdWDm3-iWV9gecXG2TF11cV2rfI0ann37EUZ-hQKheZ91tkIV_El3p2d9FabGphgttjjkb65OCp_6r-BTZJxZbQQPII96LYoAxwUxrQDuXonWc2ndWHiOdvITVgP27V_JHGANDwtWZvWz2gyXcqSi8eW7yzeXGgTrAmpDC25DAmnVN6sSBtKYoe1_TBAXDsXBj_RCBty1Ljg0OgUz593LJQ8_cnnhfnqMa7JROy2M7JKUtzO5VYzTx63dXUZ0P-xe-CG0Vwi5Xh4UyipPEuieZDdmz7m4fz72EUqWVQOCyU_p0E8ASb3UqDtdmYsf58UYLGS8m_21NXxXuscr3ItDbsGF8aZ_Q-PBW8z4EugHFj3YwKJ_HB1_Zb6s17YjF7R9AZOREHIX9F0n7_NanFBccCtwIU8TBUSkWNLrVF-zZEJMe7HIH47mJrCzgRBEmb0SfulhyRKhPoEWpcF1HHDKSW1XbKlJcb2BlVg-ICiqWj6qOdTA8QbDAJj0ms-ZBWNzHNrKv88h0gY6_B2RbBij9vcNgjnGJ_pTyA_LJyBaZvSUcbSjB_jE0ymKKGCP_HxKVnLLibPgftktz03N6tRiUaYeHsP3jzGf4CB7BIkl33_53lVfu1STi39SaUyX0XWs4a13f6PK9IvYpE_ln6vkM31vbz3yJfs8-D28F0PKZqg-aSgQliAlkK_mGpJSKbHRYZNK0qFQpBo9j2U2rr-X1tGj8d46nTGCl_lzFBEs'></script><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              green: '#74C857',
+              'green-hover': '#65b54b',
+              accent: '#83db62',
+              darkBg: '#090d13',
+              cardBg: '#0e141d',
+              border: '#1b2533',
+            }
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-layout">
+    body {
+      background-color: #090d13;
+      color: #e2e8f0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Subtle ambient background glow */
+    .radial-glow {
+      background: radial-gradient(circle at 50% 40%, rgba(20, 36, 32, 0.4) 0%, rgba(9, 13, 19, 0.95) 75%);
+    }
+
+    /* 3D Isometric Laptop Mockup Transform */
+    .laptop-viewport {
+      perspective: 1400px;
+    }
+    
+    .laptop-frame {
+      transform: rotateY(-32deg) rotateX(10deg) rotateZ(3deg) scale(0.98);
+      transform-style: preserve-3d;
+      box-shadow: -35px 40px 65px -10px rgba(0, 0, 0, 0.85), 
+                  0 0 45px 2px rgba(116, 200, 87, 0.05);
+    }
+
+    .glass-card {
+      background: linear-gradient(180deg, rgba(16, 24, 33, 0.95) 0%, rgba(11, 17, 24, 0.98) 100%);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7), inset 0 1px 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col justify-between selection:bg-brand-green selection:text-black radial-glow">
+<!-- BEGIN: TopHeader -->
+<header class="w-full px-8 lg:px-16 pt-8 flex items-center justify-between z-20">
+<!-- Brand Logo -->
+<div class="flex items-center gap-3" data-purpose="brand-logo">
+<svg class="w-10 h-10 text-brand-green" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M14 8C8.47715 8 4 12.4772 4 18V30C4 35.5228 8.47715 40 14 40H30C37.7279 40 44 33.7279 44 26V18C44 12.4772 39.5228 8 34 8H14Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="5.5"></path>
+</svg>
+<span class="text-3xl font-bold tracking-tight text-white">ius</span>
+</div>
+<!-- Top-Right Slogan -->
+<div class="hidden md:flex items-center gap-4 text-xs lg:text-sm font-medium tracking-wide text-neutral-400" data-purpose="top-slogan">
+<span>Conecte. Analise. Priorize. Realize.</span>
+<div class="w-8 h-[2px] bg-brand-green rounded-full"></div>
+</div>
+</header>
+<!-- END: TopHeader -->
+<!-- BEGIN: MainContent -->
+<main class="w-full max-w-[1780px] mx-auto px-6 lg:px-14 py-4 flex-1 flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
+<!-- LEFT COLUMN: Headline & Key Highlights -->
+<section class="w-full lg:w-[35%] flex flex-col justify-center space-y-7 xl:space-y-9 pr-0 lg:pr-4" data-purpose="hero-copy">
+<!-- Green decorative bar -->
+<div class="w-11 h-[3px] bg-brand-green rounded-full"></div>
+<!-- Main Headline -->
+<h1 class="text-4xl sm:text-5xl xl:text-6xl font-extrabold tracking-tight text-white leading-[1.12]">
+        Seu Gmail.<br/>
+        Entendido,<br/>
+        organizado e sob<br/>
+<span class="text-brand-green">controle.</span>
+</h1>
+<!-- Subtitle -->
+<p class="text-neutral-400 text-base sm:text-lg max-w-md font-normal leading-relaxed">
+        Transforme sua caixa de entrada empresarial em um centro inteligente de controle.
+      </p>
+<!-- Feature Bullets -->
+<div class="space-y-4 pt-1" data-purpose="feature-list">
+<!-- Feature 1: Inteligência -->
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-[#141b24] border border-white/5 flex items-center justify-center shrink-0">
+<svg class="w-6 h-6 text-brand-green" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</div>
+<div>
+<h2 class="text-sm sm:text-base font-bold text-white leading-snug">Inteligência</h2>
+<p class="text-xs sm:text-sm text-neutral-400">Analisa e identifica o que realmente importa.</p>
+</div>
+</div>
+<!-- Feature 2: Organização -->
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-[#141b24] border border-white/5 flex items-center justify-center shrink-0">
+<svg class="w-6 h-6 text-brand-green" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</div>
+<div>
+<h2 class="text-sm sm:text-base font-bold text-white leading-snug">Organização</h2>
+<p class="text-xs sm:text-sm text-neutral-400">Classifica e prioriza automaticamente.</p>
+</div>
+</div>
+<!-- Feature 3: Segurança -->
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-[#141b24] border border-white/5 flex items-center justify-center shrink-0">
+<svg class="w-6 h-6 text-brand-green" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</div>
+<div>
+<h2 class="text-sm sm:text-base font-bold text-white leading-snug">Segurança</h2>
+<p class="text-xs sm:text-sm text-neutral-400">Conexão oficial e segura com o Google.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- CENTER COLUMN: 3D Perspective Laptop Application Preview -->
+<section class="laptop-viewport hidden md:flex flex-1 justify-center items-center py-6 px-2 pointer-events-none select-none" data-purpose="laptop-mockup-section">
+<div class="laptop-frame relative w-[540px] xl:w-[630px] rounded-2xl bg-[#10141b] border-[7px] border-[#222834] p-3 text-xs shadow-2xl">
+<!-- Laptop Top Bezel Camera -->
+<div class="w-2.5 h-2.5 bg-black rounded-full mx-auto mb-2.5 border border-white/10"></div>
+<!-- Software Screen Interior -->
+<div class="rounded-lg bg-[#0c1017] border border-white/5 overflow-hidden flex flex-col h-[370px]">
+<!-- Top Application Bar -->
+<div class="h-10 border-b border-white/5 px-3 flex items-center justify-between bg-[#10151f]">
+<div class="flex items-center gap-2">
+<div class="w-3.5 h-3.5 text-brand-green">
+<svg fill="currentColor" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle></svg>
+</div>
+<span class="font-bold text-white text-[11px]">ius</span>
+</div>
+<!-- Search bar mock -->
+<div class="bg-[#18202d] rounded-md px-3 py-1 text-[10px] text-neutral-400 flex items-center gap-1.5 w-64">
+<svg class="w-3 h-3 text-neutral-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Pesquisar e-mails, pessoas, empresas...</span>
+</div>
+<div class="w-4"></div>
+</div>
+<!-- App Main Body: Sidebar + Inbox -->
+<div class="flex flex-1 overflow-hidden">
+<!-- Left Navigation Sidebar -->
+<div class="w-44 border-r border-white/5 p-2 space-y-3 bg-[#0d121a] text-[10px]">
+<div class="bg-brand-green/15 text-brand-green font-semibold px-2 py-1.5 rounded flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-green"></span> Caixa de entrada
+              </div>
+<div class="text-neutral-400 space-y-1.5 px-2">
+<div class="flex items-center justify-between py-0.5"><span>⭐ Importantes</span></div>
+<div class="flex items-center justify-between py-0.5 text-red-400"><span>🔥 Urgentes</span></div>
+<div class="flex items-center justify-between py-0.5"><span>⏳ Pendentes</span></div>
+<div class="flex items-center justify-between py-0.5 text-[9.5px]"><span>🔄 Aguardando resposta</span></div>
+<div class="flex items-center justify-between py-0.5"><span>⏱ Com prazo</span></div>
+</div>
+<div class="pt-2 border-t border-white/5">
+<p class="text-[9px] font-bold text-neutral-500 uppercase px-2 tracking-wider">Categorias</p>
+<div class="text-neutral-400 space-y-1 mt-1 px-2 text-[9.5px]">
+<p>👥 Clientes</p>
+<p>💳 Financeiro</p>
+<p>📦 Fornecedores</p>
+<p>📄 Documentos</p>
+<p>⚖️ Legislação</p>
+</div>
+</div>
+</div>
+<!-- Email Rows List -->
+<div class="flex-1 bg-[#090d14] p-2 space-y-1.5 overflow-hidden">
+<!-- Row 1 -->
+<div class="flex items-center justify-between p-1.5 rounded bg-white/[0.03] border border-white/5 text-[10px]">
+<div class="flex items-center gap-2">
+<span class="text-amber-400">★</span>
+<div class="w-5 h-5 rounded-full bg-indigo-500/30 text-indigo-300 flex items-center justify-center text-[8px] font-bold">DX</div>
+<div>
+<span class="font-bold text-neutral-200">Débora Xavier</span>
+<p class="text-[8.5px] text-neutral-400 truncate w-32">Leis Municipais - Atualização</p>
+</div>
+</div>
+<span class="text-[8px] text-neutral-500">10:42</span>
+</div>
+<!-- Row 2 -->
+<div class="flex items-center justify-between p-1.5 rounded bg-white/[0.015] text-[10px]">
+<div class="flex items-center gap-2">
+<span class="text-amber-400">★</span>
+<div class="w-5 h-5 rounded-full bg-rose-500/30 text-rose-300 flex items-center justify-center text-[8px] font-bold">IN</div>
+<div>
+<span class="font-bold text-neutral-300">IUS Natura</span>
+<p class="text-[8.5px] text-neutral-400 truncate w-32">Re: Pedido de Parecer Técnico</p>
+</div>
+</div>
+<span class="text-[8px] text-neutral-500">09:15</span>
+</div>
+<!-- Row 3 -->
+<div class="flex items-center justify-between p-1.5 rounded bg-white/[0.015] text-[10px]">
+<div class="flex items-center gap-2">
+<span class="text-neutral-600">☆</span>
+<div class="w-5 h-5 rounded-full bg-teal-500/30 text-teal-300 flex items-center justify-center text-[8px] font-bold">FA</div>
+<div>
+<span class="font-medium text-neutral-300">Fornecedor ABC</span>
+<p class="text-[8.5px] text-neutral-400 truncate w-32">Nota fiscal emitida #9401</p>
+</div>
+</div>
+<span class="text-[8px] text-neutral-500">Ontem</span>
+</div>
+<!-- Row 4 -->
+<div class="flex items-center justify-between p-1.5 rounded bg-white/[0.015] text-[10px]">
+<div class="flex items-center gap-2">
+<span class="text-amber-400">★</span>
+<div class="w-5 h-5 rounded-full bg-emerald-500/30 text-emerald-300 flex items-center justify-center text-[8px] font-bold">JS</div>
+<div>
+<span class="font-medium text-neutral-300">João Silva</span>
+<p class="text-[8.5px] text-neutral-400 truncate w-32">Voto emitido para consulta</p>
+</div>
+</div>
+<span class="text-[8px] text-neutral-500">Ontem</span>
+</div>
+<!-- Row 5 -->
+<div class="flex items-center justify-between p-1.5 rounded bg-white/[0.015] text-[10px]">
+<div class="flex items-center gap-2">
+<span class="text-neutral-600">☆</span>
+<div class="w-5 h-5 rounded-full bg-cyan-500/30 text-cyan-300 flex items-center justify-center text-[8px] font-bold">RF</div>
+<div>
+<span class="font-medium text-neutral-300">Receita Federal</span>
+<p class="text-[8.5px] text-neutral-400 truncate w-32">Comprovante de entrega</p>
+</div>
+</div>
+<span class="text-[8px] text-neutral-500">12 Mai</span>
+</div>
+<!-- Row 6 -->
+<div class="flex items-center justify-between p-1.5 rounded bg-white/[0.015] text-[10px]">
+<div class="flex items-center gap-2">
+<span class="text-amber-400">★</span>
+<div class="w-5 h-5 rounded-full bg-violet-500/30 text-violet-300 flex items-center justify-center text-[8px] font-bold">MG</div>
+<div>
+<span class="font-medium text-neutral-300">Marketing Google</span>
+<p class="text-[8.5px] text-neutral-400 truncate w-32">Relatório mensal consolidado</p>
+</div>
+</div>
+<span class="text-[8px] text-neutral-500">10 Mai</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Laptop base reflection line -->
+<div class="h-2 w-28 bg-[#333d4e] rounded-b-md mx-auto -mb-1 mt-1 opacity-70"></div>
+</div>
+</section>
+<!-- RIGHT COLUMN: Authentication / Connect Floating Modal -->
+<section class="w-full lg:w-[410px] xl:w-[460px] flex flex-col items-center justify-center" data-purpose="auth-modal-wrapper">
+<!-- Elevated Main Card -->
+<div class="w-full glass-card rounded-2xl p-7 sm:p-9" data-purpose="connect-google-card">
+<!-- Logo Header in Card -->
+<div class="flex items-center gap-3 mb-6">
+<svg class="w-8 h-8 text-brand-green" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M14 8C8.47715 8 4 12.4772 4 18V30C4 35.5228 8.47715 40 14 40H30C37.7279 40 44 33.7279 44 26V18C44 12.4772 39.5228 8 34 8H14Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="5.5"></path>
+</svg>
+<span class="text-2xl font-bold tracking-tight text-white">ius</span>
+</div>
+<!-- Card Titles -->
+<h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
+          Conecte seu Gmail empresarial
+        </h2>
+<p class="text-neutral-400 text-sm sm:text-base mt-2 mb-7 leading-relaxed">
+          Conecte sua conta Google para importar, organizar e analisar seus e-mails.
+        </p>
+<!-- Google Single Sign-On Button -->
+<button class="w-full bg-white hover:bg-neutral-100 text-neutral-900 font-semibold py-3.5 px-5 rounded-full flex items-center justify-between transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-green group" data-purpose="google-login-button" type="button">
+<div class="flex items-center gap-3">
+<!-- Google Multicolor 'G' Icon -->
+<svg class="w-5 h-5 shrink-0" viewbox="0 0 24 24">
+<path d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z" fill="#4285F4"></path>
+<path d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z" fill="#34A853"></path>
+<path d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z" fill="#FBBC05"></path>
+<path d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z" fill="#EA4335"></path>
+</svg>
+<span class="text-sm sm:text-base font-semibold text-neutral-800">Continuar com Google</span>
+</div>
+<!-- Arrow Chevron Icon -->
+<svg class="w-4 h-4 text-neutral-400 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+</button>
+<!-- Bullet Points Verification -->
+<ul class="mt-7 space-y-3.5 text-xs sm:text-sm text-neutral-300" data-purpose="security-points">
+<li class="flex items-start gap-3">
+<svg class="w-4 h-4 text-brand-green shrink-0 mt-0.5" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" fill-rule="evenodd"></path>
+</svg>
+<span>Conexão segura com sua conta Google</span>
+</li>
+<li class="flex items-start gap-3">
+<svg class="w-4 h-4 text-brand-green shrink-0 mt-0.5" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" fill-rule="evenodd"></path>
+</svg>
+<span>Seus dados permanecem vinculados à conta autorizada</span>
+</li>
+<li class="flex items-start gap-3">
+<svg class="w-4 h-4 text-brand-green shrink-0 mt-0.5" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" fill-rule="evenodd"></path>
+</svg>
+<span>A sincronização pode ser interrompida a qualquer momento</span>
+</li>
+</ul>
+<!-- Bottom Nested Security Box -->
+<div class="mt-7 pt-5 border-t border-white/[0.08] flex items-start gap-3.5" data-purpose="security-subcard">
+<div class="w-9 h-9 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center shrink-0 text-neutral-400 mt-0.5">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</div>
+<div class="text-xs text-neutral-400 leading-relaxed">
+<p>Seus dados são protegidos e utilizados apenas para operação do Email Control.</p>
+<a class="inline-flex items-center text-brand-green hover:underline font-semibold mt-1 transition-colors" href="#seguranca">
+              Saiba mais sobre segurança <span class="ml-1">→</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Below Modal Tagline Note -->
+<div class="flex items-center gap-3 mt-5 px-3 max-w-sm" data-purpose="enterprise-badge">
+<svg class="w-5 h-5 text-neutral-500 shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path>
+</svg>
+<p class="text-[11px] sm:text-xs text-neutral-500 leading-snug">
+          Solução desenvolvida para empresas que valorizam organização, produtividade e segurança.
+        </p>
+</div>
+</section>
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: MainFooter -->
+<footer class="w-full px-8 lg:px-16 pb-8 pt-4 flex items-center justify-between text-xs text-neutral-600 border-t border-transparent z-10" data-purpose="page-footer">
+<div class="space-y-0.5">
+<p class="font-semibold tracking-widest text-[11px] text-neutral-500 uppercase">IUS  |  EMAIL CONTROL</p>
+<p class="text-[11px]">© 2024 IUS. Todos os direitos reservados.</p>
+</div>
+</footer>
+<!-- END: MainFooter -->
+</body></html>

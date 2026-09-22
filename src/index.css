@@ -1,0 +1,222 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --color-surface-base: #0d1117;
+    --color-surface-bg: #0a0d14;
+    --color-surface-sidebar: #0e121b;
+    --color-surface-card: #131823;
+    --color-surface-border: #1f2737;
+    --color-surface-hover: #182030;
+    --color-surface-active: #1c2436;
+    --color-brand-green: #10b981;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Monospaced numbering for tabular alignment */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Custom scrollbars for light and dark modes */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #263143;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #374357;
+}
+
+/* Email Reader HTML & Content Styles */
+.email-content-view {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  font-size: 0.9375rem;
+  line-height: 1.625;
+}
+.email-content-view img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  display: inline-block;
+}
+.email-content-view table {
+  max-width: 100%;
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+}
+.email-content-view th,
+.email-content-view td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e2e8f0;
+}
+.dark .email-content-view th,
+.dark .email-content-view td {
+  border-color: #263143;
+}
+.email-content-view a {
+  color: #059669;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s;
+}
+.email-content-view a:hover {
+  color: #047857;
+}
+.dark .email-content-view a {
+  color: #34d399;
+}
+.dark .email-content-view a:hover {
+  color: #6ee7b7;
+}
+.email-content-view h1,
+.email-content-view h2,
+.email-content-view h3,
+.email-content-view h4 {
+  font-weight: 700;
+  color: #0f172a;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+.dark .email-content-view h1,
+.dark .email-content-view h2,
+.dark .email-content-view h3,
+.dark .email-content-view h4 {
+  color: #f8fafc;
+}
+.email-content-view h1 { font-size: 1.375rem; }
+.email-content-view h2 { font-size: 1.1875rem; }
+.email-content-view h3 { font-size: 1.0625rem; }
+.email-content-view p {
+  margin-bottom: 0.875rem;
+}
+.email-content-view ul,
+.email-content-view ol {
+  padding-left: 1.5rem;
+  margin-bottom: 0.875rem;
+}
+.email-content-view ul { list-style-type: disc; }
+.email-content-view ol { list-style-type: decimal; }
+.email-content-view li {
+  margin-bottom: 0.375rem;
+}
+.email-content-view blockquote {
+  border-left: 3px solid #10b981;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #64748b;
+  font-style: italic;
+}
+.dark .email-content-view blockquote {
+  color: #94a3b8;
+  border-left-color: #059669;
+}
+.email-content-view hr {
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+  margin: 1.5rem 0;
+}
+.dark .email-content-view hr {
+  border-top-color: #1f2737;
+}
+.email-content-view pre,
+.email-content-view code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875em;
+}
+.email-content-view pre {
+  background: #f1f5f9;
+  padding: 0.875rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 0.875rem 0;
+}
+.dark .email-content-view pre {
+  background: #111722;
+  color: #e2e8f0;
+}
+.email-content-view :not(pre) > code {
+  background: #f1f5f9;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+  color: #0f172a;
+}
+.dark .email-content-view :not(pre) > code {
+  background: #192233;
+  color: #f1f5f9;
+}
+
+/* Ambient background glow for light and dark modes */
+.radial-glow {
+  background: radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.04) 0%, rgba(248, 250, 252, 1) 70%);
+}
+
+.dark .radial-glow {
+  background: radial-gradient(circle at 50% 40%, rgba(13, 242, 166, 0.08) 0%, rgba(9, 13, 19, 0.98) 75%);
+}
+
+/* 3D Isometric Laptop Mockup Transform */
+.laptop-viewport {
+  perspective: 1400px;
+}
+
+.laptop-frame {
+  transform: rotateY(-32deg) rotateX(10deg) rotateZ(3deg) scale(0.98);
+  transform-style: preserve-3d;
+  box-shadow: -20px 30px 50px -10px rgba(0, 0, 0, 0.18), 
+              0 0 25px 2px rgba(16, 185, 129, 0.05);
+  transition: all 0.3s ease;
+}
+
+.dark .laptop-frame {
+  box-shadow: -35px 40px 65px -10px rgba(0, 0, 0, 0.85), 
+              0 0 45px 2px rgba(16, 185, 129, 0.08);
+}
+
+.glass-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 16px 36px -12px rgba(15, 23, 42, 0.08);
+}
+
+.dark .glass-card {
+  background: linear-gradient(180deg, rgba(17, 24, 34, 0.95) 0%, rgba(12, 17, 24, 0.98) 100%);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7), inset 0 1px 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.glow-effect {
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.18);
+}
+
+.dark .glow-effect {
+  box-shadow: 0 12px 35px -5px rgba(16, 185, 129, 0.28);
+}
+
+.text-glow {
+  text-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+}
+
