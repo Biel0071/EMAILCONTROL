@@ -538,6 +538,39 @@ if (fs.existsSync(distPath)) {
   });
 } else {
   console.log(`[Email Control Server] Diretório dist não encontrado nas rotas testadas:`, candidateDistPaths);
+  app.get('*', (_req, res) => {
+    res.status(200).send(`
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>IUS Email Control — Inicializando</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #090d13; color: #f8fafc; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 1.5rem; box-sizing: border-box; }
+          .card { background: #101622; border: 1px solid #1e293b; padding: 2.5rem; border-radius: 1.25rem; max-width: 520px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.5); text-align: center; }
+          .logo { width: 48px; height: 48px; border-radius: 12px; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); display: flex; align-items: center; justify-content: center; color: #10b981; font-weight: bold; font-size: 1.5rem; margin: 0 auto 1.25rem; }
+          h1 { color: #ffffff; font-size: 1.35rem; font-weight: 700; margin: 0 0 0.5rem; letter-spacing: -0.02em; }
+          p { color: #94a3b8; font-size: 0.9rem; line-height: 1.6; margin: 0 0 1.25rem; }
+          .command-box { background: #05080e; border: 1px solid #1e293b; padding: 0.85rem 1.25rem; border-radius: 0.75rem; color: #34d399; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.95rem; text-align: left; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; }
+          .badge { display: inline-block; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); color: #10b981; font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 9999px; margin-bottom: 1rem; }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <div class="logo">ius</div>
+          <span class="badge">SERVIDOR ONLINE NA PORTA ${PORT}</span>
+          <h1>Compilando Interface Web</h1>
+          <p>O servidor backend já está ativo e pronto, mas os arquivos estáticos do frontend ainda não foram gerados nesta máquina.</p>
+          <div class="command-box">
+            <span>npm run build:all</span>
+          </div>
+          <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 0;">Ou utilize o comando completo: <code>npm run online</code></p>
+        </div>
+      </body>
+      </html>
+    `);
+  });
 }
 
 // Global error handling middleware

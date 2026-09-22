@@ -62,6 +62,23 @@ npm run package:win
 
 ---
 
+## ⚡ Início Rápido (1 Comando)
+
+Para quem acabou de baixar ou clonar o projeto:
+
+```bash
+# 1. Instale as dependências
+npm install
+
+# 2. Ative e rode o sistema completo (compila automaticamente, inicia o servidor e abre o navegador)
+npm run online
+```
+O sistema ficará **online em `http://localhost:1000`** e abrirá a tela inicial automaticamente no seu navegador.
+
+No Windows, você também pode simplesmente dar duplo clique no arquivo [`iniciar_email_control.bat`](iniciar_email_control.bat).
+
+---
+
 ## 🌐 Deploy em Produção (Web / Nuvem)
 
 A plataforma pode ser executada como um serviço web unificado:
@@ -78,10 +95,7 @@ Acesse: `http://localhost:1000`
 # 1. Instalar dependências
 npm ci
 
-# 2. Compilar frontend e backend
-npm run build:all
-
-# 3. Iniciar servidor de produção
+# 2. Iniciar servidor de produção (compila e inicia automaticamente)
 npm start
 ```
 

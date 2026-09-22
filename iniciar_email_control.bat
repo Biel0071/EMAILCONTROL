@@ -30,12 +30,20 @@ if not exist "node_modules\" (
     )
 )
 
-:: 3. Compilar interface se necessário
+:: 3. Compilar interface e servidor se necessário
 if not exist "dist\" (
-    echo [2/3] Compilando interface de usuário...
-    call npm run build
+    echo [2/3] Compilando interface de usuário e servidor interno...
+    call npm run build:all
     if %errorlevel% neq 0 (
-        echo [ERRO] Falha na compilação do frontend.
+        echo [ERRO] Falha na compilação do sistema.
+        pause
+        exit /b 1
+    )
+) else if not exist "dist-server\" (
+    echo [2/3] Compilando servidor interno...
+    call npm run build:server
+    if %errorlevel% neq 0 (
+        echo [ERRO] Falha na compilação do servidor.
         pause
         exit /b 1
     )
