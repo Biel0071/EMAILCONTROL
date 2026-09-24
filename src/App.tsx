@@ -87,6 +87,25 @@ export const App: React.FC = () => {
     iusTRAB: 0,
   });
 
+  // Helper: compute folder and category counts from mock data
+  const getMockCounts = useCallback(() => ({
+    inbox: MOCK_EMAILS.length,
+    important: MOCK_EMAILS.filter(e => e.isStarred || e.priority === 'p1' || e.priority === 'p2').length,
+    urgent: MOCK_EMAILS.filter(e => e.priority === 'p1').length,
+    pending: MOCK_EMAILS.filter(e => e.actionRequired).length,
+    waiting: MOCK_EMAILS.filter(e => e.actionLabel?.includes('Aguardando') || e.statusLabel?.includes('resposta')).length,
+    clientes: MOCK_EMAILS.filter(e => e.category === 'clientes').length,
+    financeiro: MOCK_EMAILS.filter(e => e.category === 'financeiro').length,
+    fornecedores: MOCK_EMAILS.filter(e => e.category === 'fornecedores').length,
+    legislacao: MOCK_EMAILS.filter(e => e.category === 'legislacao').length,
+    iusAplicavel: MOCK_EMAILS.filter(e => e.insight?.complianceAnalysis?.aplicabilidade === 'APLICAVEL').length,
+    iusExclusao: MOCK_EMAILS.filter(e => e.insight?.complianceAnalysis?.aplicabilidade === 'CAL_EXCLUSAO').length,
+    iusMA: MOCK_EMAILS.filter(e => e.insight?.complianceAnalysis?.escopos?.includes('MA')).length,
+    iusSSO: MOCK_EMAILS.filter(e => e.insight?.complianceAnalysis?.escopos?.includes('SSO')).length,
+    iusSI: MOCK_EMAILS.filter(e => e.insight?.complianceAnalysis?.escopos?.includes('SI')).length,
+    iusTRAB: MOCK_EMAILS.filter(e => e.insight?.complianceAnalysis?.escopos?.includes('TRAB')).length,
+  }), []);
+
   // Fetch counts across entire inbox
   const fetchCounts = useCallback(async () => {
     try {
@@ -94,11 +113,13 @@ export const App: React.FC = () => {
       if (res.ok) {
         const data = await res.json();
         setFolderCounts(data);
+        return;
       }
     } catch {
       // ignore
     }
-  }, []);
+    setFolderCounts(getMockCounts());
+  }, [getMockCounts]);
 
   // 1. Check initial Auth status & sync status
   const fetchAuthStatus = useCallback(async () => {
@@ -179,9 +200,8 @@ export const App: React.FC = () => {
       }
       fetchCounts();
     } catch {
-      // Filter mock emails locally ONLY if unauthenticated in mock mode
-      if (authStatus?.mode === 'mock' && !authStatus?.authenticated) {
-        let filtered = [...MOCK_EMAILS];
+      // Filter mock emails locally if in mock mode or backend is offline (e.g. GitHub Pages)
+      let filtered = [...MOCK_EMAILS];
 
         // Folder filters
         if (currentFolder === 'important') {
@@ -219,25 +239,71 @@ export const App: React.FC = () => {
         setEmails(filtered);
         if (filtered.length > 0) {
           setSelectedEmailId(prev => (prev && filtered.some(e => e.id === prev) ? prev : filtered[0].id));
+        } else {
+          setSelectedEmailId(null);
         }
-      } else {
-        setEmails([]);
-        setSelectedEmailId(null);
-      }
     }
-  }, [currentFolder, currentCategory, searchQuery, authStatus?.mode, authStatus?.authenticated, fetchCounts]);
+  }, [currentFolder, currentCategory, searchQuery, fetchCounts]);
 
   useEffect(() => {
     fetchEmails();
+  }, [fetchEmails]);
+
+  // Client-side animated synchronization progression for static hosting (GitHub Pages)
+  const startClientSideSync = useCallback(() => {
+    setIsSyncing(true);
+    let currentProgress = 10;
+    const interval = setInterval(() => {
+      currentProgress += 18;
+      if (currentProgress >= 100) {
+        currentProgress = 100;
+        clearInterval(interval);
+        setSyncState(prev => ({
+          ...prev,
+          step: 7,
+          percent: 100,
+          status: 'completed',
+          processedEmails: prev.totalEmails || MOCK_SYNC_STATE.totalEmails,
+          analyzedCount: prev.totalEmails || MOCK_SYNC_STATE.analyzedCount,
+          currentActivity: 'Sincronização concluída com sucesso',
+        }));
+        setTimeout(() => {
+          setIsSyncing(false);
+          setScreen('inbox');
+          fetchEmails();
+        }, 500);
+      } else {
+        const step = Math.min(Math.floor((currentProgress / 100) * 7) + 1, 6);
+        setSyncState(prev => {
+          const total = prev.totalEmails || MOCK_SYNC_STATE.totalEmails;
+          return {
+            ...prev,
+            step,
+            percent: currentProgress,
+            status: 'syncing',
+            totalEmails: total,
+            processedEmails: Math.floor((currentProgress / 100) * total),
+            analyzedCount: Math.floor((currentProgress / 100) * (prev.analyzedCount || MOCK_SYNC_STATE.analyzedCount)),
+            threadsCount: MOCK_SYNC_STATE.threadsCount,
+            sendersCount: MOCK_SYNC_STATE.sendersCount,
+            categoriesCount: MOCK_SYNC_STATE.categoriesCount,
+            prioritiesCount: MOCK_SYNC_STATE.prioritiesCount,
+            currentActivity: step <= 2 ? 'Mapeando remetentes e conversas' : step <= 4 ? 'Classificando categorias operacionais' : 'Analisando diretrizes e conformidade IUS',
+          };
+        });
+      }
+    }, 280);
   }, [fetchEmails]);
 
   // 3. Sync Progress Poll
   const startSyncProcess = async () => {
     setIsSyncing(true);
     try {
-      await fetch('/api/sync/start', { method: 'POST' });
+      const startRes = await fetch('/api/sync/start', { method: 'POST' });
+      if (!startRes.ok) throw new Error('offline');
     } catch {
-      // ignore
+      startClientSideSync();
+      return;
     }
 
     // Polling progress
@@ -297,14 +363,28 @@ export const App: React.FC = () => {
         const data = await res.json();
         if (data.status) {
           setAuthStatus(data.status);
+          setSyncState(MOCK_SYNC_STATE);
+          setScreen('sync');
+          startSyncProcess();
+          return;
         }
       }
     } catch {
-      // ignore
+      // static hosting fallback
     }
+    setAuthStatus({
+      authenticated: true,
+      hasGoogleCredentials: false,
+      mode: 'mock',
+      user: {
+        email: accountType === 'enterprise' ? 'empresa@iusnatura.com.br' : 'usuario@gmail.com',
+        name: 'IUS Natura Operações',
+        picture: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
+      },
+    });
     setSyncState(MOCK_SYNC_STATE);
     setScreen('sync');
-    startSyncProcess();
+    startClientSideSync();
   };
 
   const handleDisconnect = async () => {

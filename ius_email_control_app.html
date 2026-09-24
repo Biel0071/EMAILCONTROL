@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IUS EMAIL CONTROL — Artefato Executivo No-Code</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    h1, h2, h3, .font-display { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    /* Custom scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.2); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.4); }
+    .dark ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); }
+    .dark ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+    .tab-active { border-bottom: 2px solid #10b981; color: #10b981; font-weight: 600; }
+  </style>
+</head>
+<body class="h-full bg-slate-50 dark:bg-[#090d13] text-slate-800 dark:text-slate-200 antialiased selection:bg-emerald-500 selection:text-black overflow-hidden transition-colors duration-200">
+  <div id="app" class="h-full flex flex-col"></div>
+
+  <script>
+    // =========================================================================
+    // DADOS CORPORATIVOS & DIRETRIZES IUS NATURA (11 ESCOPOS OFICIAIS)
+    // =========================================================================
+    const MOCK_EMAILS = [
+      {
+        id: 'ius-01',
+        fromName: 'Débora Xavier',
+        fromEmail: 'debora.xavier@iusnatura.com.br',
+        company: 'IUS Natura Jurídico',
+        subject: 'Leis Municipais — Nova Lei nº 4.821/2026 sobre Licenciamento Ambiental e Resíduos',
+        date: '10:42',
+        fullDate: '24 de Setembro de 2026 às 10:42',
+        body: 'Prezada equipe operacional,\n\nIdentificamos a publicação de nova legislação de interesse no Diário Oficial:\n\n• Norma: Lei Municipal nº 4.821/2026\n• Tema: Meio Ambiente e Gestão Integrada de Resíduos Sólidos Industriais (MA)\n• Esfera: Municipal\n• Impacto: Obrigatoriedade de atualização semestral do MTR e adequação dos pontos de transbordo temporário.\n\nRecomendamos a inclusão imediata no painel de conformidade da unidade.\n\nAtenciosamente,\nDébora Xavier — Departamento de Legislação Aplicável',
+        category: 'legislacao',
+        priority: 'p1',
+        isStarred: true,
+        isUnread: true,
+        actionRequired: true,
+        actionLabel: 'Ação Necessária',
+        statusLabel: 'Pendente Análise',
+        hasAttachments: true,
+        attachments: [{ filename: 'Lei_Municipal_4821_Residuos.pdf', size: '2.4 MB' }],
+        complianceScope: {
+          isRelevant: true,
+          theme: 'MA',
+          themeLabel: 'Meio Ambiente',
+          scopeNumber: 1,
+          scopeDescription: 'Legislação ambiental e gestão de resíduos sólidos',
+          actionPlan: 'Atualizar registro no sistema de conformidade e notificar equipe de EHS.',
+          deadline: '10 dias úteis',
+          status: 'Diretriz Vigente'
+        }
+      },
+      {
+        id: 'ius-02',
+        fromName: 'Carlos Mendonça',
+        fromEmail: 'carlos.mendonca@mineracao-vale.com.br',
+        company: 'Vale do Horizonte Mineração',
+        subject: 'Re: Relatório de Auditoria de Segurança e Saúde Ocupacional (SSO)',
+        date: '09:15',
+        fullDate: '24 de Setembro de 2026 às 09:15',
+        body: 'Prezados consultores IUS,\n\nRecebemos os apontamentos preliminares referentes à NR-22 e NR-01. Solicitamos reunião técnica para alinhamento das ações de bloqueio e LOTO (Lockout/Tagout).\n\nFavor confirmar se a equipe está disponível na próxima terça-feira às 14h.\n\nCordialmente,\nCarlos Mendonça — Gerência de Saúde e Segurança',
+        category: 'clientes',
+        priority: 'p2',
+        isStarred: true,
+        isUnread: false,
+        actionRequired: true,
+        actionLabel: 'Reunião Agendada',
+        statusLabel: 'Aguardando Resposta',
+        hasAttachments: true,
+        attachments: [{ filename: 'Apontamentos_Auditoria_SSO.xlsx', size: '1.1 MB' }],
+        complianceScope: {
+          isRelevant: true,
+          theme: 'SSO',
+          themeLabel: 'Saúde e Segurança',
+          scopeNumber: 3,
+          scopeDescription: 'Normas Regulamentadoras NR-01 e NR-22',
+          actionPlan: 'Preparar pauta técnica de LOTO e confirmar agenda.',
+          deadline: '29/09/2026',
+          status: 'Diretriz Vigente'
+        }
+      },
+      {
+        id: 'ius-03',
+        fromName: 'Auditoria Externa DNV',
+        fromEmail: 'certificacao@dnv-assurance.com',
+        company: 'DNV Business Assurance',
+        subject: 'Agendamento de Auditoria de Recertificação ISO 14001:2015 e ISO 45001:2018',
+        date: 'Ontem',
+        fullDate: '23 de Setembro de 2026 às 16:30',
+        body: 'Prezados Senhores,\n\nConforme cronograma do ciclo trienal, confirmamos as datas da auditoria externa integrada para os dias 18 a 21 de Novembro de 2026.\n\nEm anexo encaminhamos o plano de auditoria e a matriz de amostragem de conformidade legal.\n\nAtenciosamente,\nCoordenação de Certificação de Sistemas de Gestão',
+        category: 'legislacao',
+        priority: 'p1',
+        isStarred: false,
+        isUnread: false,
+        actionRequired: true,
+        actionLabel: 'Preparar Evidências',
+        statusLabel: 'Prazo Estabelecido',
+        hasAttachments: true,
+        attachments: [{ filename: 'Plano_Auditoria_ISO14001_45001.pdf', size: '4.8 MB' }],
+        complianceScope: {
+          isRelevant: true,
+          theme: 'SI',
+          themeLabel: 'Sistemas Integrados',
+          scopeNumber: 5,
+          scopeDescription: 'Requisitos de certificação e auditoria integrada ISO',
+          actionPlan: 'Conferir matriz de requisitos legais atualizada e evidências de atendimento.',
+          deadline: '18/11/2026',
+          status: 'Diretriz Vigente'
+        }
+      },
+      {
+        id: 'ius-04',
+        fromName: 'Financeiro Fornecedor Brasil',
+        fromEmail: 'nfe@solucoes-ambientais.com.br',
+        company: 'Soluções Ambientais Ltda',
+        subject: 'Nota Fiscal Eletrônica e Medição de Serviços nº 88.412 — Amostragem de Efluentes',
+        date: 'Ontem',
+        fullDate: '23 de Setembro de 2026 às 14:10',
+        body: 'Prezado setor de Contas a Pagar,\n\nSegue anexo o faturamento referente à campanha quadrimestral de monitoramento de efluentes tratados (estação ETE-02):\n\n• DANFE nº 88.412\n• Relatório de Ensaio Laboratorial nº 2026-LA-742\n• Vencimento do boleto: 10/10/2026\n\nFavor confirmar o recebimento fiscal.',
+        category: 'financeiro',
+        priority: 'p3',
+        isStarred: false,
+        isUnread: false,
+        actionRequired: false,
+        actionLabel: 'Encaminhado Financeiro',
+        statusLabel: 'Liquidando',
+        hasAttachments: true,
+        attachments: [
+          { filename: 'DANFE_88412.pdf', size: '890 KB' },
+          { filename: 'Laudo_Laboratorial_Efluente.pdf', size: '3.2 MB' }
+        ],
+        complianceScope: {
+          isRelevant: true,
+          theme: 'MA',
+          themeLabel: 'Monitoramento Hídrico',
+          scopeNumber: 2,
+          scopeDescription: 'Padrões de lançamento CONAMA 430 e outorga',
+          actionPlan: 'Vincular laudo à condicionante nº 14 da licença operacional.',
+          deadline: '10/10/2026',
+          status: 'Diretriz Vigente'
+        }
+      },
+      {
+        id: 'ius-05',
+        fromName: 'Engenharia & Suprimentos',
+        fromEmail: 'compras@equipamentos-seguranca.com.br',
+        company: 'Total Proteção EPIs',
+        subject: 'Cotação Aprovada — Lote de Detectores Multigás Portáteis (Espaço Confinado NR-33)',
+        date: '21 set',
+        fullDate: '21 de Setembro de 2026 às 11:00',
+        body: 'Prezados,\n\nInformamos que os 6 detectores multigás com certificado de calibração RBC e sensor de H2S, CO, O2 e LEL foram despachados com previsão de entrega para sexta-feira.\n\nCódigo de rastreamento: BR-SEDEX-9928120381BR.',
+        category: 'fornecedores',
+        priority: 'p3',
+        isStarred: false,
+        isUnread: false,
+        actionRequired: false,
+        actionLabel: 'Aguardando Entrega',
+        statusLabel: 'Em Trânsito',
+        hasAttachments: false,
+        attachments: [],
+        complianceScope: {
+          isRelevant: true,
+          theme: 'SSO',
+          themeLabel: 'Espaço Confinado',
+          scopeNumber: 4,
+          scopeDescription: 'Requisitos de instrumentação e segurança NR-33',
+          actionPlan: 'Receber e arquivar certificados de calibração na chegada.',
+          deadline: '26/09/2026',
+          status: 'Diretriz Vigente'
+        }
+      }
+    ];
+
+    // =========================================================================
+    // ESTADO DA APLICAÇÃO (CLIENT-SIDE REACTIVE STORE)
+    // =========================================================================
+    let state = {
+      theme: localStorage.getItem('ius_theme') || 'dark',
+      currentScreen: 'connect', // 'connect' | 'sync' | 'inbox'
+      currentFolder: 'inbox',
+      currentCategory: 'all',
+      searchQuery: '',
+      selectedEmailId: MOCK_EMAILS[0].id,
+      readingMode: 'formatted', // 'formatted' | 'clean'
+      syncProgress: 0,
+      showReplyModal: false,
+      replyContent: '',
+      emails: [...MOCK_EMAILS],
+      readerWidthPercent: 55 // % do leitor
+    };
+
+    function applyTheme() {
+      if (state.theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+      }
+      localStorage.setItem('ius_theme', state.theme);
+    }
+    applyTheme();
+
+    function toggleTheme() {
+      state.theme = state.theme === 'dark' ? 'light' : 'dark';
+      applyTheme();
+      render();
+    }
+
+    // =========================================================================
+    // MÉTODOS DE AÇÃO
+    // =========================================================================
+    function startInteractiveDemo() {
+      state.currentScreen = 'sync';
+      state.syncProgress = 0;
+      render();
+
+      let progress = 12;
+      const interval = setInterval(() => {
+        progress += 18;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(interval);
+          state.syncProgress = 100;
+          render();
+          setTimeout(() => {
+            state.currentScreen = 'inbox';
+            render();
+          }, 600);
+        } else {
+          state.syncProgress = progress;
+          render();
+        }
+      }, 260);
+    }
+
+    function selectEmail(id) {
+      state.selectedEmailId = id;
+      const email = state.emails.find(e => e.id === id);
+      if (email) email.isUnread = false;
+      render();
+    }
+
+    function toggleStar(e, id) {
+      e.stopPropagation();
+      const email = state.emails.find(m => m.id === id);
+      if (email) {
+        email.isStarred = !email.isStarred;
+        render();
+      }
+    }
+
+    function toggleRead(id) {
+      const email = state.emails.find(m => m.id === id);
+      if (email) {
+        email.isUnread = !email.isUnread;
+        render();
+      }
+    }
+
+    function archiveEmail(id) {
+      state.emails = state.emails.filter(e => e.id !== id);
+      if (state.emails.length > 0) state.selectedEmailId = state.emails[0].id;
+      else state.selectedEmailId = null;
+      render();
+    }
+
+    function sendReply() {
+      if (!state.replyContent.trim()) return;
+      alert('Resposta enviada com sucesso! Sincronizada com o histórico da conversa.');
+      state.showReplyModal = false;
+      state.replyContent = '';
+      render();
+    }
+
+    function downloadMockAttachment(filename) {
+      const text = `Documento: ${filename}\nPlataforma: IUS Email Control Enterprise\nConformidade verificada com diretrizes IUS Natura.`;
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // =========================================================================
+    // RENDERIZADOR PRINCIPAL
+    // =========================================================================
+    function render() {
+      const app = document.getElementById('app');
+      if (state.currentScreen === 'connect') {
+        app.innerHTML = renderConnectScreen();
+      } else if (state.currentScreen === 'sync') {
+        app.innerHTML = renderSyncScreen();
+      } else {
+        app.innerHTML = renderInboxScreen();
+      }
+    }
+
+    // --- TELA 1: CONEXÃO GMAIL ---
+    function renderConnectScreen() {
+      return `
+        <div class="h-full flex flex-col justify-between p-6 sm:p-12 overflow-y-auto">
+          <!-- Topbar -->
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold text-xl">ius</div>
+              <div>
+                <span class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">EMAIL CONTROL</span>
+                <span class="block text-[10px] tracking-widest text-emerald-600 dark:text-emerald-400 uppercase font-semibold">Camada Operacional Gmail</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="hidden sm:inline text-xs text-slate-500 dark:text-slate-400 font-medium">Plataforma No-Code</span>
+              <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:opacity-80 transition cursor-pointer">
+                ${state.theme === 'dark' ? '☀️ Modo Claro' : '🌙 Modo Escuro'}
+              </button>
+            </div>
+          </div>
+
+          <!-- Hero Central -->
+          <div class="max-w-4xl mx-auto my-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div class="lg:col-span-7 space-y-5">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Diretrizes Oficiais IUS Natura
+              </div>
+              <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+                Seu Gmail.<br/>
+                <span class="text-emerald-600 dark:text-emerald-400">Entendido, organizado</span><br/>
+                e sob controle.
+              </h1>
+              <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+                Centralize e filtre todas as mensagens empresariais, relatórios ambientais, notificações de fornecedores e atos normativos municipais e federais com leitura inteligente sem alucinações.
+              </p>
+              
+              <!-- CTA Principal -->
+              <div class="pt-2 flex flex-col sm:flex-row gap-3">
+                <button onclick="startInteractiveDemo()" class="px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2.5 transition cursor-pointer">
+                  <span>🚀 Explorar Demonstração Executiva (1 Clique)</span>
+                </button>
+              </div>
+
+              <!-- Garantias Corporativas -->
+              <div class="pt-4 grid grid-cols-2 gap-4 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800">
+                <div class="flex items-center gap-2">
+                  <span class="text-emerald-500">✓</span> 11 Escopos de Legislação
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-emerald-500">✓</span> Zero Dependência de Servidor
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-emerald-500">✓</span> Modo Formatado e Leitura
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-emerald-500">✓</span> Pronto para Compartilhar
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Visual de Demonstração -->
+            <div class="lg:col-span-5 bg-white dark:bg-[#111724] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/80">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                  <span class="text-xs font-bold text-slate-900 dark:text-white">Central Operacional</span>
+                </div>
+                <span class="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">Ativo</span>
+              </div>
+              <div class="space-y-2.5 text-xs">
+                <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800">
+                  <p class="font-bold text-slate-900 dark:text-slate-100">Débora Xavier — IUS Natura</p>
+                  <p class="text-slate-500 dark:text-slate-400 truncate mt-0.5">Leis Municipais — Nova Lei nº 4.821/2026</p>
+                  <div class="mt-2 flex items-center justify-between">
+                    <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold uppercase">LEGISLAÇÃO • MA</span>
+                    <span class="text-[10px] text-rose-500 font-bold">ALTA PRIORIDADE</span>
+                  </div>
+                </div>
+                <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800">
+                  <p class="font-bold text-slate-900 dark:text-slate-100">Vale do Horizonte Mineração</p>
+                  <p class="text-slate-500 dark:text-slate-400 truncate mt-0.5">Auditoria SSO — Alinhamento NR-22</p>
+                  <div class="mt-2 flex items-center justify-between">
+                    <span class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold uppercase">CLIENTES • SSO</span>
+                    <span class="text-[10px] text-amber-500 font-semibold">REUNIÃO PENDENTE</span>
+                  </div>
+                </div>
+              </div>
+              <button onclick="startInteractiveDemo()" class="w-full py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs transition cursor-pointer">
+                Ver Caixa de Entrada Completa &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="text-center text-xs text-slate-500 dark:text-slate-500 pt-4">
+            © 2026 IUS Natura — Plataforma Executiva de Operação e Gestão de E-mails
+          </div>
+        </div>
+      `;
+    }
+
+    // --- TELA 2: SINCRONIZAÇÃO INTELIGENTE ---
+    function renderSyncScreen() {
+      const p = state.syncProgress;
+      const stepIdx = Math.min(Math.floor((p / 100) * 7), 6);
+      const steps = [
+        'Conexão segura estabelecida com a conta Google',
+        'Varredura de cabeçalhos e tópicos prioritários',
+        'Conversas e remetentes organizados',
+        'Extração e sanitização dos corpos de e-mail',
+        'Cruzamento com os 11 Escopos de Legislação IUS',
+        'Identificação de prazos e obrigações operacionais',
+        'Painel executivo pronto para utilização'
+      ];
+
+      return `
+        <div class="h-full flex items-center justify-center p-6 bg-slate-50 dark:bg-[#090d13]">
+          <div class="w-full max-w-lg bg-white dark:bg-[#111724] border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl text-center space-y-6">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold text-2xl">ius</div>
+            
+            <div>
+              <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">Sincronizando Mensagens</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Classificando categorias, prazos e diretrizes de conformidade...</p>
+            </div>
+
+            <!-- Progresso Radial / Barra -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs font-bold">
+                <span class="text-emerald-600 dark:text-emerald-400">Progresso Operacional</span>
+                <span class="text-slate-900 dark:text-white font-mono text-sm">${p}%</span>
+              </div>
+              <div class="w-full h-3 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                <div class="h-full bg-emerald-500 transition-all duration-300 rounded-full" style="width: ${p}%"></div>
+              </div>
+            </div>
+
+            <!-- Checklist 7 Etapas -->
+            <div class="text-left space-y-2 text-xs bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+              ${steps.map((st, i) => `
+                <div class="flex items-center gap-2.5 ${i < stepIdx ? 'text-emerald-600 dark:text-emerald-400 font-medium' : i === stepIdx ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-400 dark:text-slate-600'}">
+                  <span>${i < stepIdx ? '✓' : i === stepIdx ? '●' : '○'}</span>
+                  <span>${st}</span>
+                </div>
+              `).join('')}
+            </div>
+
+            <button onclick="state.currentScreen = 'inbox'; render();" class="text-xs font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white underline cursor-pointer">
+              Continuar em segundo plano &rarr;
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- TELA 3: CENTRAL DE E-MAIL (3-PANE) ---
+    function renderInboxScreen() {
+      let filtered = [...state.emails];
+      if (state.currentFolder === 'important') filtered = filtered.filter(e => e.isStarred || e.priority === 'p1' || e.priority === 'p2');
+      else if (state.currentFolder === 'urgent') filtered = filtered.filter(e => e.priority === 'p1');
+      else if (state.currentFolder === 'pending') filtered = filtered.filter(e => e.actionRequired);
+      else if (state.currentFolder === 'waiting') filtered = filtered.filter(e => e.actionLabel.includes('Aguardando'));
+
+      if (state.currentCategory !== 'all') filtered = filtered.filter(e => e.category === state.currentCategory);
+
+      if (state.searchQuery.trim()) {
+        const q = state.searchQuery.toLowerCase();
+        filtered = filtered.filter(e => e.subject.toLowerCase().includes(q) || e.fromName.toLowerCase().includes(q) || e.body.toLowerCase().includes(q));
+      }
+
+      const activeEmail = state.emails.find(e => e.id === state.selectedEmailId) || filtered[0] || null;
+
+      return `
+        <div class="h-full flex flex-col overflow-hidden">
+          <!-- Top Header -->
+          <header class="h-14 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 flex items-center justify-between bg-white dark:bg-[#0c1017] shrink-0">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold text-sm">ius</div>
+              <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">EMAIL CONTROL</span>
+              <span class="hidden md:inline text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded">Ambiente No-Code Ativo</span>
+            </div>
+
+            <!-- Busca Central -->
+            <div class="flex-1 max-w-md mx-4">
+              <input
+                type="text"
+                placeholder="Pesquisar e-mails, legislação, fornecedores..."
+                value="${state.searchQuery}"
+                oninput="state.searchQuery = this.value; render();"
+                class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:border-emerald-500"
+              />
+            </div>
+
+            <!-- Controles do Topo -->
+            <div class="flex items-center gap-3">
+              <button onclick="toggleTheme()" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs text-slate-700 dark:text-slate-300 transition cursor-pointer">
+                ${state.theme === 'dark' ? '☀️ Claro' : '🌙 Escuro'}
+              </button>
+              <div class="w-7 h-7 rounded-full bg-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-bold text-xs flex items-center justify-center">
+                IN
+              </div>
+            </div>
+          </header>
+
+          <!-- 3-Pane Body -->
+          <div class="flex-1 flex overflow-hidden">
+            <!-- PANE 1: SIDEBAR -->
+            <aside class="w-56 border-r border-slate-200 dark:border-slate-800 p-3 flex flex-col justify-between bg-slate-50 dark:bg-[#0c1017] shrink-0 text-xs">
+              <div class="space-y-4">
+                <!-- Pastas -->
+                <div class="space-y-1">
+                  <p class="text-[10px] font-bold text-slate-400 uppercase px-2 mb-1.5">Pastas</p>
+                  ${[
+                    { id: 'inbox', label: 'Caixa de Entrada', count: state.emails.length },
+                    { id: 'important', label: 'Importantes', count: state.emails.filter(e => e.isStarred || e.priority === 'p1' || e.priority === 'p2').length },
+                    { id: 'urgent', label: 'Urgentes (P1)', count: state.emails.filter(e => e.priority === 'p1').length },
+                    { id: 'pending', label: 'Pendentes Ação', count: state.emails.filter(e => e.actionRequired).length },
+                    { id: 'waiting', label: 'Aguardando', count: state.emails.filter(e => e.actionLabel.includes('Aguardando')).length }
+                  ].map(f => `
+                    <button
+                      onclick="state.currentFolder = '${f.id}'; render();"
+                      class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-left transition cursor-pointer ${state.currentFolder === f.id ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800/60'}"
+                    >
+                      <span>${f.label}</span>
+                      <span class="text-[10px] px-1.5 py-0.5 rounded-full ${state.currentFolder === f.id ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'} font-mono">${f.count}</span>
+                    </button>
+                  `).join('')}
+                </div>
+
+                <!-- Categorias -->
+                <div class="space-y-1 pt-2 border-t border-slate-200 dark:border-slate-800">
+                  <p class="text-[10px] font-bold text-slate-400 uppercase px-2 mb-1.5">Categorias</p>
+                  ${[
+                    { id: 'all', label: 'Todas as Categorias' },
+                    { id: 'legislacao', label: 'Legislação IUS' },
+                    { id: 'clientes', label: 'Clientes' },
+                    { id: 'financeiro', label: 'Financeiro' },
+                    { id: 'fornecedores', label: 'Fornecedores' }
+                  ].map(c => `
+                    <button
+                      onclick="state.currentCategory = '${c.id}'; render();"
+                      class="w-full flex items-center justify-between px-2.5 py-1 rounded-lg text-left transition cursor-pointer text-xs ${state.currentCategory === c.id ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800/60'}"
+                    >
+                      <span>${c.label}</span>
+                    </button>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Rodapé da Sidebar -->
+              <div class="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
+                <div class="px-2 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold">
+                  ● 11 Diretrizes Vigentes
+                </div>
+                <button onclick="state.currentScreen = 'connect'; render();" class="w-full text-left px-2 py-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition text-[11px] cursor-pointer">
+                  &larr; Conectar Outra Conta
+                </button>
+              </div>
+            </aside>
+
+            <!-- PANE 2: LISTA DE E-MAILS -->
+            <section class="w-80 sm:w-96 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-white dark:bg-[#090d13] shrink-0 overflow-y-auto">
+              <div class="p-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/20">
+                <span class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">${filtered.length} Mensagens</span>
+                <span class="text-[10px] text-slate-400">Ordenado por relevância</span>
+              </div>
+              <div class="divide-y divide-slate-100 dark:divide-slate-800/60">
+                ${filtered.map(m => {
+                  const isSelected = activeEmail && activeEmail.id === m.id;
+                  const priorityColor = m.priority === 'p1' ? 'bg-rose-500' : m.priority === 'p2' ? 'bg-amber-500' : 'bg-slate-400';
+                  return `
+                    <div
+                      onclick="selectEmail('${m.id}')"
+                      class="p-3 transition cursor-pointer relative ${isSelected ? 'bg-emerald-500/10 dark:bg-emerald-500/15' : 'hover:bg-slate-50 dark:hover:bg-slate-900/40'}"
+                    >
+                      <div class="absolute left-0 top-0 bottom-0 w-1 ${priorityColor}"></div>
+                      <div class="flex items-start justify-between gap-2">
+                        <div class="flex items-center gap-1.5 truncate">
+                          <button onclick="toggleStar(event, '${m.id}')" class="text-xs ${m.isStarred ? 'text-amber-400' : 'text-slate-300 dark:text-slate-600'}">★</button>
+                          <span class="text-xs font-bold ${m.isUnread ? 'text-slate-900 dark:text-white font-extrabold' : 'text-slate-700 dark:text-slate-300'} truncate">${m.fromName}</span>
+                        </div>
+                        <span class="text-[10px] font-mono text-slate-400 shrink-0">${m.date}</span>
+                      </div>
+                      <p class="text-xs font-medium text-slate-800 dark:text-slate-200 truncate mt-1 ${m.isUnread ? 'font-bold' : ''}">${m.subject}</p>
+                      <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">${m.body}</p>
+                      <div class="mt-2 flex items-center justify-between text-[10px]">
+                        <span class="px-1.5 py-0.5 rounded font-semibold uppercase ${m.category === 'legislacao' ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}">${m.category}</span>
+                        ${m.actionRequired ? `<span class="text-rose-600 dark:text-rose-400 font-semibold">${m.actionLabel}</span>` : ''}
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </section>
+
+            <!-- PANE 3: LEITOR & PAINEL DE DIRETRIZES -->
+            <main class="flex-1 flex overflow-hidden bg-slate-50 dark:bg-[#0e141f]">
+              ${activeEmail ? `
+                <div class="flex-1 flex flex-col overflow-hidden border-r border-slate-200 dark:border-slate-800">
+                  <!-- Toolbar de Ações -->
+                  <div class="h-12 border-b border-slate-200 dark:border-slate-800 px-4 flex items-center justify-between bg-white dark:bg-[#0c1017]">
+                    <div class="flex items-center gap-2">
+                      <button onclick="archiveEmail('${activeEmail.id}')" class="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-medium transition cursor-pointer">📥 Arquivar</button>
+                      <button onclick="toggleRead('${activeEmail.id}')" class="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-medium transition cursor-pointer">${activeEmail.isUnread ? 'Lido' : 'Não Lido'}</button>
+                      <button onclick="state.showReplyModal = true; render();" class="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition cursor-pointer">↩ Responder</button>
+                    </div>
+
+                    <!-- Alternância Modo Leitura -->
+                    <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg text-xs">
+                      <button
+                        onclick="state.readingMode = 'formatted'; render();"
+                        class="px-2 py-0.5 rounded cursor-pointer ${state.readingMode === 'formatted' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold shadow-xs' : 'text-slate-500'}"
+                      >Formatado</button>
+                      <button
+                        onclick="state.readingMode = 'clean'; render();"
+                        class="px-2 py-0.5 rounded cursor-pointer ${state.readingMode === 'clean' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold shadow-xs' : 'text-slate-500'}"
+                      >Higienizado</button>
+                    </div>
+                  </div>
+
+                  <!-- Conteúdo do E-mail -->
+                  <div class="flex-1 p-6 overflow-y-auto space-y-5">
+                    <div class="space-y-1">
+                      <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">${activeEmail.category}</span>
+                        <span class="text-xs text-slate-400 font-mono">${activeEmail.fullDate}</span>
+                      </div>
+                      <h2 class="text-xl font-bold text-slate-900 dark:text-white leading-snug">${activeEmail.subject}</h2>
+                      <div class="flex items-center gap-2 pt-1 text-xs">
+                        <span class="font-bold text-slate-800 dark:text-slate-200">${activeEmail.fromName}</span>
+                        <span class="text-slate-400">&lt;${activeEmail.fromEmail}&gt;</span>
+                      </div>
+                    </div>
+
+                    <!-- Corpo Renderizado -->
+                    <div class="p-6 rounded-2xl ${state.readingMode === 'clean' ? 'bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 max-w-2xl text-slate-800 dark:text-slate-200 text-sm leading-relaxed whitespace-pre-wrap' : 'bg-white dark:bg-[#121824] border border-slate-200 dark:border-slate-800 text-sm leading-relaxed whitespace-pre-wrap'}">
+                      ${activeEmail.body}
+                    </div>
+
+                    <!-- Anexos -->
+                    ${activeEmail.attachments && activeEmail.attachments.length > 0 ? `
+                      <div class="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
+                        <p class="text-xs font-bold text-slate-700 dark:text-slate-300">Anexos Identificados (${activeEmail.attachments.length})</p>
+                        <div class="flex flex-wrap gap-2">
+                          ${activeEmail.attachments.map(att => `
+                            <button
+                              onclick="downloadMockAttachment('${att.filename}')"
+                              class="flex items-center gap-2 px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 text-xs text-slate-800 dark:text-slate-200 transition cursor-pointer"
+                            >
+                              <span>📄 ${att.filename}</span>
+                              <span class="text-[10px] text-slate-400 font-mono">${att.size}</span>
+                              <span class="text-emerald-500 font-bold">&darr;</span>
+                            </button>
+                          `).join('')}
+                        </div>
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+
+                <!-- PAINEL LATERAL DIREITO: DIRETRIZES & CONFORMIDADE IUS -->
+                <aside class="w-72 lg:w-80 p-5 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c1017] shrink-0 overflow-y-auto space-y-5 text-xs">
+                  <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                    <span class="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px]">Inteligência IUS</span>
+                    <span class="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">Diretriz Vigente</span>
+                  </div>
+
+                  <!-- Escopo Legal -->
+                  <div class="space-y-3">
+                    <div>
+                      <p class="text-[10px] font-bold text-slate-400 uppercase">Tema / Escopo</p>
+                      <p class="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">${activeEmail.complianceScope.themeLabel} (Escopo ${activeEmail.complianceScope.scopeNumber})</p>
+                      <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">${activeEmail.complianceScope.scopeDescription}</p>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-1.5">
+                      <p class="text-[10px] font-bold text-slate-400 uppercase">Plano de Ação Recomendado</p>
+                      <p class="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-snug">${activeEmail.complianceScope.actionPlan}</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-[11px]">
+                      <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+                        <span class="text-[10px] text-slate-400 block font-bold uppercase">Prazo</span>
+                        <span class="font-semibold text-rose-500">${activeEmail.complianceScope.deadline}</span>
+                      </div>
+                      <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+                        <span class="text-[10px] text-slate-400 block font-bold uppercase">Relevância</span>
+                        <span class="font-semibold text-emerald-600 dark:text-emerald-400">Alta Conformidade</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Checklist dos 11 Escopos -->
+                  <div class="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-1.5">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase">11 Escopos Monitorados</p>
+                    <div class="grid grid-cols-2 gap-1 text-[10px] text-slate-500 dark:text-slate-400">
+                      <span class="p-1 rounded bg-slate-100 dark:bg-slate-900/60">1. Meio Ambiente</span>
+                      <span class="p-1 rounded bg-slate-100 dark:bg-slate-900/60">2. Resíduos</span>
+                      <span class="p-1 rounded bg-slate-100 dark:bg-slate-900/60">3. SSO / NR-01</span>
+                      <span class="p-1 rounded bg-slate-100 dark:bg-slate-900/60">4. NR-33/35</span>
+                      <span class="p-1 rounded bg-slate-100 dark:bg-slate-900/60">5. ISO 14001</span>
+                      <span class="p-1 rounded bg-slate-100 dark:bg-slate-900/60">6. ISO 45001</span>
+                    </div>
+                  </div>
+                </aside>
+              ` : `
+                <div class="flex-1 flex items-center justify-center text-slate-400 text-xs">
+                  Nenhum e-mail selecionado.
+                </div>
+              `}
+            </main>
+          </div>
+
+          <!-- Modal de Resposta Operacional -->
+          ${state.showReplyModal ? `
+            <div class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+              <div class="bg-white dark:bg-[#111724] border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                  <h3 class="text-sm font-bold text-slate-900 dark:text-white">Responder: ${activeEmail.fromName}</h3>
+                  <button onclick="state.showReplyModal = false; render();" class="text-slate-400 hover:text-white">&times;</button>
+                </div>
+                <textarea
+                  rows="4"
+                  placeholder="Escreva sua resposta operacional..."
+                  value="${state.replyContent}"
+                  oninput="state.replyContent = this.value;"
+                  class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:border-emerald-500"
+                ></textarea>
+                <div class="flex justify-end gap-2 pt-2">
+                  <button onclick="state.showReplyModal = false; render();" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold cursor-pointer">Cancelar</button>
+                  <button onclick="sendReply()" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold cursor-pointer">Enviar Resposta</button>
+                </div>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    // Inicialização
+    render();
+  </script>
+</body>
+</html>
